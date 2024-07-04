@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'SpaceGrotesk-SemiBold',
         marginTop: 75,
+        marginBottom: 75,
         color: '#C00404'
     }
 })

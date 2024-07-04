@@ -14,3 +14,10 @@ export async function userLogin(email: string, password: string) {
 
     return (await response.json())
 }
+
+export async function getLeaderboard() {
+    const response = await fetch(`${backendURL}/leaderboard`, {
+        method: 'POST'
+    })
+    return (await response.json())
+}
