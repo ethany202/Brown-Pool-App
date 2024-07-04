@@ -6,12 +6,19 @@ import { StyleSheet } from 'react-native';
 import React, { useState } from 'react';
 import { router } from 'expo-router'
 import { userLogin } from "./api/api";
+import { useFonts } from "expo-font";
 
-const brownLogo = require('@/assets/images/brown-logo.png')
+const brownLogo = require('@/assets/images/brown-logo.png');
 
 export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const [fontsLoaded, fontError] = useFonts({
+        "SpaceGrotesk-Regular": require("../assets/fonts/SpaceGrotesk-Regular.ttf"),
+        "SpaceGrotesk-SemiBold": require("../assets/fonts/SpaceGrotesk-SemiBold.ttf"),
+        "SpaceGrotesk-Bold": require("../assets/fonts/SpaceGrotesk-Bold.ttf")
+    });
 
     async function submitLogin() {
         try {
@@ -23,6 +30,10 @@ export default function Login() {
         catch (err) {
             console.log(err)
         }
+    }
+
+    if (!fontsLoaded) {
+
     }
 
     return (
@@ -90,6 +101,7 @@ const styles = StyleSheet.create({
         padding: 20,
         paddingVertical: 15,
         fontSize: 18,
+        fontFamily: 'SpaceGrotesk-Regular',
         margin: 20,
         marginBottom: 0,
         width: 300
@@ -110,6 +122,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 18,
-        letterSpacing: 1
+        letterSpacing: 1,
+        fontFamily: 'SpaceGrotesk-Bold',
     }
 })
