@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { router } from 'expo-router'
 import { userLogin } from "./api/api";
 import { useFonts } from "expo-font";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const brownLogo = require('@/assets/images/brown-logo.png');
 
@@ -24,7 +25,8 @@ export default function Login() {
         try {
             const emailJSON = await userLogin(email, password)
             if (emailJSON.email) {
-                router.push('/home')
+                AsyncStorage.setItem('email', email)
+                    .then(() => router.replace({ pathname: '/home' }))
             }
         }
         catch (err) {
@@ -32,50 +34,55 @@ export default function Login() {
         }
     }
 
-    if (!fontsLoaded) {
+    if (fontsLoaded) {
+        AsyncStorage.getItem('email')
+            .then(value => {
+                if (value != null) {
+                    router.replace('/home')
+                }
+            })
 
+        return (
+            <KeyboardAvoidingView
+                style={styles.containerStyle}
+                behavior={Platform.OS === "ios" ? "padding" : 'height'}
+                enabled
+            >
+                <SafeAreaView
+                    style={styles.safeAreaStyle}>
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <View style={{
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            marginTop: 100
+                        }}>
+                            <View style={{ marginBottom: 120 }}>
+                                <Image
+                                    source={brownLogo}
+                                    style={styles.loginImage}
+                                />
+                            </View>
+
+                            <View style={{ alignItems: 'center' }}>
+                                <TextInput
+                                    placeholder="Email"
+                                    onChangeText={text => setEmail(text)}
+                                    style={styles.loginInput} />
+                                <TextInput
+                                    placeholder="Password"
+                                    secureTextEntry={true}
+                                    onChangeText={text => setPassword(text)}
+                                    style={styles.loginInput} />
+                                <TouchableOpacity style={styles.loginButton} onPress={submitLogin}>
+                                    <Text style={styles.loginText}>LOGIN</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </SafeAreaView>
+            </ KeyboardAvoidingView >
+        );
     }
-
-    return (
-        <KeyboardAvoidingView
-            style={styles.containerStyle}
-            behavior={Platform.OS === "ios" ? "padding" : 'height'}
-            enabled
-        >
-            <SafeAreaView
-                style={styles.safeAreaStyle}>
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={{
-                        justifyContent: 'flex-end',
-                        alignItems: 'center',
-                        marginTop: 100
-                    }}>
-                        <View style={{ marginBottom: 120 }}>
-                            <Image
-                                source={brownLogo}
-                                style={styles.loginImage}
-                            />
-                        </View>
-
-                        <View style={{ alignItems: 'center' }}>
-                            <TextInput
-                                placeholder="Email"
-                                onChangeText={text => setEmail(text)}
-                                style={styles.loginInput} />
-                            <TextInput
-                                placeholder="Password"
-                                secureTextEntry={true}
-                                onChangeText={text => setPassword(text)}
-                                style={styles.loginInput} />
-                            <TouchableOpacity style={styles.loginButton} onPress={submitLogin}>
-                                <Text style={styles.loginText}>LOGIN</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </SafeAreaView>
-        </ KeyboardAvoidingView >
-    );
 }
 
 const styles = StyleSheet.create({

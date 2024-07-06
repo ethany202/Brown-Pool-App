@@ -2,14 +2,18 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
 import React from 'react';
 import { useFonts } from 'expo-font';
+import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const profileIcon = require('../../assets/images/anon-profile.png')
+const brownLogo = require('../../assets/images/brown-logo.png')
+const logoutIcon = require('../../assets/images/user-logout.png')
 
 interface HeaderProps {
-    title: string
+    title: string,
+    profileData: JSON
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, profileData }: HeaderProps) {
 
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
@@ -17,42 +21,71 @@ export function Header({ title }: HeaderProps) {
         "SpaceGrotesk-Bold": require("../../assets/fonts/SpaceGrotesk-Bold.ttf")
     });
 
-    return (
-        <View
-            style={styles.headerWrapper}>
+
+    async function logout() {
+        AsyncStorage.removeItem('email')
+            .then(() => router.replace('/'))
+    }
+
+    if (fontsLoaded) {
+        return (
             <View
-                style={{
-                    //flex: 1
-                    alignItems: 'flex-end'
-                }}>
-                <TouchableOpacity>
+                style={styles.headerWrapper}>
+                <View
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between'
+                    }}>
                     <Image
-                        source={profileIcon}
-                        style={styles.profileIconStyle}
+                        source={brownLogo}
+                        style={styles.logoStyle}
                     />
-                </TouchableOpacity>
-            </View>
-            <View
-                style={{
-                    alignItems: 'center'
+                    <TouchableOpacity
+                        onPress={() => logout()}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end'
+
+                        }}>
+                        <Image
+                            source={logoutIcon}
+                            style={styles.logoutIconStyle}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View style={{
+                    alignItems: 'center',
                 }}>
-                <Text style={styles.titleStyle}>{title}</Text>
+                    <Text style={styles.titleStyle}>{title}</Text>
+
+                </View>
+
             </View>
-        </View>
-    )
+        )
+    }
+
 }
 
 const styles = StyleSheet.create({
     headerWrapper: {
-        borderTopWidth: 0.5,
-        borderColor: 'grey',
-        marginTop: 50
+        // borderTopWidth: 0.5,
+        // borderColor: 'grey',
+        marginTop: 50,
     },
-    profileIconStyle: {
-        width: 40,
-        height: 40,
-        margin: 10,
-        opacity: 0.5
+    logoStyle: {
+        width: 35,
+        height: 35,
+        marginTop: 20,
+        marginLeft: 20,
+        opacity: 1,
+    },
+    logoutIconStyle: {
+        width: 30,
+        height: 30,
+        marginTop: 20,
+        marginRight: 20,
+        opacity: 1
     },
     titleStyle: {
         fontWeight: 700,
@@ -60,6 +93,8 @@ const styles = StyleSheet.create({
         fontFamily: 'SpaceGrotesk-SemiBold',
         marginTop: 75,
         marginBottom: 75,
-        color: '#C00404'
+        paddingHorizontal: 10,
+        color: 'white',
+        backgroundColor: '#C00404'
     }
 })
