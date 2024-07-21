@@ -1,5 +1,5 @@
 import {
-    TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView, View, TextInput,
+    TouchableOpacity, Pressable, Keyboard, TouchableWithoutFeedback, SafeAreaView, View, TextInput,
     Image, KeyboardAvoidingView, Platform, Text
 } from "react-native";
 import { StyleSheet } from 'react-native';
@@ -27,6 +27,7 @@ export default function Login() {
             if (emailJSON.email) {
                 AsyncStorage.setItem('email', email)
                     .then(() => router.replace({ pathname: '/home' }))
+                //router.replace({ pathname: '/home' })
             }
         }
         catch (err) {
@@ -41,6 +42,7 @@ export default function Login() {
                     router.replace('/home')
                 }
             })
+            .catch(err => console.log(err))
 
         return (
             <KeyboardAvoidingView
@@ -73,9 +75,12 @@ export default function Login() {
                                     secureTextEntry={true}
                                     onChangeText={text => setPassword(text)}
                                     style={styles.loginInput} />
-                                <TouchableOpacity style={styles.loginButton} onPress={submitLogin}>
+                                <Pressable
+                                    style={styles.loginButton}
+                                    onPress={submitLogin}
+                                    onPointerDown={submitLogin}>
                                     <Text style={styles.loginText}>LOGIN</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
