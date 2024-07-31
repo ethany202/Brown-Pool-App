@@ -25,30 +25,31 @@ export function PlayerEntry({ rank, name, points, fontColor, style }: PlayerEntr
             paddingVertical: 10,
             borderBottomWidth: 0.5
         }]}>
-            <Text style={{
+            <Text style={[styles.entryFont, {
                 flex: 1,
-                fontSize: 20,
-                fontFamily: 'SpaceGrotesk-Regular',
                 color: fontColor
-            }}>
+            }]}>
                 {rank}
             </Text>
-            <Text style={{
+            <Text style={[styles.entryFont, {
                 flex: 2,
-                fontSize: 20,
-                fontFamily: 'SpaceGrotesk-Regular',
                 color: fontColor
-            }}>
+            }]}>
                 {name}
             </Text>
-            <Text style={{
+            <Text style={[styles.entryFont, {
                 flex: 0,
-                fontSize: 20,
-                fontFamily: 'SpaceGrotesk-Regular',
                 color: fontColor
-            }}>
+            }]}>
                 {points}
             </Text>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    entryFont: {
+        fontSize: 20,
+        fontFamily: 'SpaceGrotesk-Regular',
+    }
+})

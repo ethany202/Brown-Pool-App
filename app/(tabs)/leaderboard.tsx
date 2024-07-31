@@ -2,7 +2,7 @@ import { View, ScrollView, Text, FlatList } from "react-native";
 import { Header } from "@/components/header/Header";
 import { PlayerEntry } from "@/components/player-entry/PlayerEntry";
 
-import { getLeaderboard } from "../api/api";
+import { obtainLeaderboard } from "../api/api";
 import { StyleSheet } from "react-native";
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
@@ -21,7 +21,7 @@ export default function Leaderboard() {
 
 
     async function fetchLeaderboard() {
-        const leaderboard = await getLeaderboard()
+        const leaderboard = await obtainLeaderboard()
         setLeaderboardInfo(leaderboard)
     }
 

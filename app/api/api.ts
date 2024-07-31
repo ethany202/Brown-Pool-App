@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage"
+
 const backendURL = "http://Yanchtop:80"
 
 export async function userLogin(email: string, password: string) {
@@ -12,12 +14,29 @@ export async function userLogin(email: string, password: string) {
         }
     })
 
-    return (await response.json())
+    return response
 }
 
-export async function getLeaderboard() {
+export async function obtainLeaderboard() {
     const response = await fetch(`${backendURL}/leaderboard`, {
         method: 'POST'
     })
     return (await response.json())
+}
+
+export async function obtainMatchHistory(userID: string) {
+    const response = await fetch(`${backendURL}/match-history`, {
+        method: 'POST',
+        body: JSON.stringify({
+            userID: userID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+        // headers: {
+        //     'Authorization': `Bearer ${AsyncStorage.getItem('jwtToken')}`
+        // }
+    })
+
+    return response
 }

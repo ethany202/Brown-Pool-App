@@ -23,11 +23,17 @@ export default function Login() {
 
     async function submitLogin() {
         try {
-            const emailJSON = await userLogin(email, password)
-            if (emailJSON.email) {
-                AsyncStorage.setItem('email', email)
-                    .then(() => router.replace({ pathname: '/home' }))
-                //router.replace({ pathname: '/home' })
+            const loginResult = await userLogin(email, password)
+            if (loginResult.status == 200) {
+                // await AsyncStorage.setItem('jwtToken', )
+                console.log("ENTERED")
+                const responseData = await loginResult.json()
+
+                await AsyncStorage.setItem('user_id', "" + responseData.user_id)
+                await AsyncStorage.setItem('email', responseData.email)
+                await AsyncStorage.setItem('name', responseData.name)
+
+                router.replace({ pathname: '/home' })
             }
         }
         catch (err) {
