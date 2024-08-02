@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { Header } from '@/components/header/Header';
-import { useLocalSearchParams } from "expo-router";
 import { obtainMatchHistory } from '../api/api';
 import { StyleSheet } from 'react-native';
 import { HistoryEntry } from '@/components/history-entry/HistoryEntry';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MatchHistory() {
-    const params = useLocalSearchParams()
-    const profileData = JSON.parse(JSON.stringify(params))
+
     const [matchHistory, setMatchHistory] = useState<any>({ list: [] })
 
     const fetchMatchHistory = async () => {
@@ -38,7 +36,6 @@ export default function MatchHistory() {
         <View>
             <Header
                 title="Match History"
-                profileData={profileData}
             />
             <FlatList
                 style={styles.historySection}

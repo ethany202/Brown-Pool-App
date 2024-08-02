@@ -10,10 +10,9 @@ const logoutIcon = require('../../assets/images/user-logout.png')
 
 interface HeaderProps {
     title: string,
-    profileData: JSON
 }
 
-export function Header({ title, profileData }: HeaderProps) {
+export function Header({ title }: HeaderProps) {
 
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),

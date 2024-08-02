@@ -40,3 +40,21 @@ export async function obtainMatchHistory(userID: string) {
 
     return response
 }
+
+export async function obtainProfileData(email: string, userID: string) {
+    const response = await fetch(`${backendURL}/profile-data`, {
+        method: 'POST',
+        body: JSON.stringify({
+            email: email,
+            userID: userID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+        // headers: {
+        //     'Authorization': `Bearer ${AsyncStorage.getItem('jwtToken')}`
+        // }
+    })
+
+    return (await response.json())
+}

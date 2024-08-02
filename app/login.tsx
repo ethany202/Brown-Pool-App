@@ -25,8 +25,6 @@ export default function Login() {
         try {
             const loginResult = await userLogin(email, password)
             if (loginResult.status == 200) {
-                // await AsyncStorage.setItem('jwtToken', )
-                console.log("ENTERED")
                 const responseData = await loginResult.json()
 
                 await AsyncStorage.setItem('user_id', "" + responseData.user_id)
@@ -91,7 +89,7 @@ export default function Login() {
                         </View>
                     </TouchableWithoutFeedback>
                 </SafeAreaView>
-            </ KeyboardAvoidingView >
+            </KeyboardAvoidingView >
         );
     }
 }

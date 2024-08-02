@@ -6,12 +6,9 @@ import { obtainLeaderboard } from "../api/api";
 import { StyleSheet } from "react-native";
 import { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import { useLocalSearchParams } from "expo-router";
 
 export default function Leaderboard() {
 
-    const params = useLocalSearchParams()
-    const profileData = JSON.parse(JSON.stringify(params))
     const [leaderboardInfo, setLeaderboardInfo] = useState<any>({ list: [] })
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
@@ -27,14 +24,13 @@ export default function Leaderboard() {
 
     useEffect(() => {
         fetchLeaderboard()
-        //console.log(leaderboardInfo)
     }, [])
 
     return (
         <View>
             <Header
                 title="Leaderboard"
-                profileData={profileData} />
+            />
             <View style={styles.entryStyle}>
                 <Text style={{
                     flex: 1,

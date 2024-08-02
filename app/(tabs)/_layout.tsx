@@ -1,22 +1,13 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { obtainProfileData } from '../api/api';
 import { EnhancedTabBarIcon } from '@/components/navigation/EnhancedTabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
-
-    // Perform search here
-    var profileData = {
-        name: 'Ethan Ye',
-        currentRank: 1,
-        points: 92,
-        gamesWon: 100,
-        gamesLost: 80
-    }
-
 
     return (
         <Tabs
@@ -32,7 +23,6 @@ export default function TabLayout() {
                         <EnhancedTabBarIcon name='home' color={color} />
                     ),
                 }}
-                initialParams={profileData}
             />
             <Tabs.Screen
                 name="history"
@@ -42,7 +32,6 @@ export default function TabLayout() {
                         <EnhancedTabBarIcon name='history' color={color} />
                     ),
                 }}
-                initialParams={profileData}
             />
             <Tabs.Screen
                 name="leaderboard"
@@ -61,7 +50,6 @@ export default function TabLayout() {
                         <EnhancedTabBarIcon name='person' color={color} />
                     ),
                 }}
-                initialParams={profileData}
             />
         </Tabs>
     );
