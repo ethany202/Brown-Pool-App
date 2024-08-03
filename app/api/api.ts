@@ -58,3 +58,17 @@ export async function obtainProfileData(email: string, userID: string) {
 
     return (await response.json())
 }
+
+export async function obtainMatchRequests(userID: string) {
+    const response = await fetch(`${backendURL}/match-requests`, {
+        method: 'POST',
+        body: JSON.stringify({
+            userID: userID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+    })
+
+    return (await response.json())
+}

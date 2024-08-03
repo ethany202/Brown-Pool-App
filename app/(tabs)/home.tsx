@@ -1,11 +1,14 @@
 import {
-    Text, View, TextInput, ScrollView, Pressable, SafeAreaView, FlatList,
+    Text, View, TextInput, Pressable, FlatList,
     SectionList
 } from 'react-native';
 import { Header } from '@/components/header/Header';
 import { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
+import { obtainMatchRequests } from '../api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MatchRequest } from '@/components/match-request/MatchRequest';
 
 export default function Home() {
 
@@ -18,11 +21,23 @@ export default function Home() {
     const [filteredPlayers, setFilteredPlayers] = useState<any>(['ethan_ye@brown.edu'])
     const [matchRequests, setMatchRequests] = useState<any>([])
     const [playerSearch, setPlayerSearch] = useState<string>('')
+
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
         "SpaceGrotesk-SemiBold": require("../../assets/fonts/SpaceGrotesk-SemiBold.ttf"),
         "SpaceGrotesk-Bold": require("../../assets/fonts/SpaceGrotesk-Bold.ttf")
     });
+
+    const getMatchRequests = async () => {
+        const userID = await AsyncStorage.getItem('user_id') || ''
+
+        const responseJSON = await obtainMatchRequests(userID)
+        setMatchRequests(responseJSON.list)
+    }
+
+    useEffect(() => {
+        getMatchRequests()
+    }, [])
 
     return (
         <View style={{
@@ -67,16 +82,15 @@ export default function Home() {
 
                         }}
                     />}
-                {/* <View style={{
-                    alignItems: 'center'
-                }}>
-                    <Text style={{
-                        position: 'absolute',
-                    }}>Helo</Text>
-                </View> */}
-                {/* <SectionList>
+                <FlatList
+                    data={matchRequests}
+                    renderItem={({ item }) => {
+                        return (
+                            <Text></Text>
+                        )
+                    }}>
 
-                </SectionList> */}
+                </FlatList>
             </View>
         </View>
     )
