@@ -1,10 +1,10 @@
-import { View, ScrollView, Text, FlatList } from "react-native";
+import { View, ScrollView, Text, FlatList, RefreshControl } from "react-native";
 import { Header } from "@/components/header/Header";
 import { PlayerEntry } from "@/components/player-entry/PlayerEntry";
 
 import { obtainLeaderboard } from "../api/api";
 import { StyleSheet } from "react-native";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useFonts } from 'expo-font';
 
 export default function Leaderboard() {
@@ -16,10 +16,20 @@ export default function Leaderboard() {
         "SpaceGrotesk-Bold": require("../../assets/fonts/SpaceGrotesk-Bold.ttf")
     });
 
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            fetchLeaderboard()
+            setRefreshing(false);
+        }, 2000);
+    }, []);
+
 
     async function fetchLeaderboard() {
         const leaderboard = await obtainLeaderboard()
-        setLeaderboardInfo(leaderboard)
+        setLeaderboardInfo(await leaderboard.json())
     }
 
     useEffect(() => {
@@ -82,6 +92,11 @@ export default function Leaderboard() {
                     }
 
                 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh} />
+                }
             />
         </View>
     )

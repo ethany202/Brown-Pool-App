@@ -1,12 +1,12 @@
 import { Tabs } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { obtainProfileData } from '../api/api';
+import React from 'react';
 import { EnhancedTabBarIcon } from '@/components/navigation/EnhancedTabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TabLayout() {
+
     const colorScheme = useColorScheme();
 
     return (

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { Header } from '@/components/header/Header';
 import { obtainMatchHistory } from '../api/api';
 import { StyleSheet } from 'react-native';
@@ -9,6 +9,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function MatchHistory() {
 
     const [matchHistory, setMatchHistory] = useState<any>({ list: [] })
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            fetchMatchHistory()
+            setRefreshing(false);
+        }, 2000);
+    }, []);
 
     const fetchMatchHistory = async () => {
         try {
@@ -17,7 +26,6 @@ export default function MatchHistory() {
 
             if (response.status == 200) {
                 const jsonData = await response.json()
-                console.log(jsonData)
                 setMatchHistory(jsonData)
                 // Set Match History data
             }
@@ -34,9 +42,7 @@ export default function MatchHistory() {
 
     return (
         <View>
-            <Header
-                title="Match History"
-            />
+            <Header title="Match History" />
             <FlatList
                 style={styles.historySection}
                 data={matchHistory.list}
@@ -47,7 +53,11 @@ export default function MatchHistory() {
                             style={styles.historyEntry}
                         />
                     )
-                }}>
+                }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh} />}>
 
             </FlatList>
         </View>
@@ -62,8 +72,5 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        // backgroundColor: '#12ae00',
-        // backgroundColor: '#65A765',
-        // backgroundColor: '#EE9090'
     }
 })

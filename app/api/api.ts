@@ -21,7 +21,7 @@ export async function obtainLeaderboard() {
     const response = await fetch(`${backendURL}/leaderboard`, {
         method: 'POST'
     })
-    return (await response.json())
+    return response
 }
 
 export async function obtainMatchHistory(userID: string) {
@@ -56,7 +56,7 @@ export async function obtainProfileData(email: string, userID: string) {
         // }
     })
 
-    return (await response.json())
+    return response
 }
 
 export async function obtainMatchRequests(userID: string) {
@@ -70,5 +70,5 @@ export async function obtainMatchRequests(userID: string) {
         }
     })
 
-    return (await response.json())
+    return response
 }

@@ -1,5 +1,5 @@
 import {
-    TouchableOpacity, Pressable, Keyboard, TouchableWithoutFeedback, SafeAreaView, View, TextInput,
+    Pressable, Keyboard, TouchableOpacity, TouchableWithoutFeedback, SafeAreaView, View, TextInput,
     Image, KeyboardAvoidingView, Platform, Text
 } from "react-native";
 import { StyleSheet } from 'react-native';
@@ -24,7 +24,7 @@ export default function Login() {
     async function submitLogin() {
         try {
             const loginResult = await userLogin(email, password)
-            if (loginResult.status == 200) {
+            if (loginResult.status === 200) {
                 const responseData = await loginResult.json()
 
                 await AsyncStorage.setItem('user_id', "" + responseData.user_id)
@@ -79,12 +79,13 @@ export default function Login() {
                                     secureTextEntry={true}
                                     onChangeText={text => setPassword(text)}
                                     style={styles.loginInput} />
-                                <Pressable
+                                <TouchableOpacity
                                     style={styles.loginButton}
                                     onPress={submitLogin}
-                                    onPointerDown={submitLogin}>
+                                // onPointerDown={submitLogin}
+                                >
                                     <Text style={styles.loginText}>LOGIN</Text>
-                                </Pressable>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>

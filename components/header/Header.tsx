@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
 import React from 'react';
 import { useFonts } from 'expo-font';
@@ -40,7 +40,7 @@ export function Header({ title }: HeaderProps) {
                         source={brownLogo}
                         style={styles.logoStyle}
                     />
-                    <Pressable
+                    <TouchableOpacity
                         onPress={() => logout()}
                         style={{
                             display: 'flex',
@@ -51,7 +51,7 @@ export function Header({ title }: HeaderProps) {
                             source={logoutIcon}
                             style={styles.logoutIconStyle}
                         />
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
                 <View style={{
                     alignItems: 'center',
