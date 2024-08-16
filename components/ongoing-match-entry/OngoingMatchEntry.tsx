@@ -3,12 +3,12 @@ import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 
 interface OngoingMatchProps {
-    matchNumber: number,
+    matchID: number,
     opponentName: string,
-    opponentEmail: string
+    opponentRank: string
 }
 
-export function OngoingMatchEntry({ matchNumber, opponentName, opponentEmail }: OngoingMatchProps) {
+export function OngoingMatchEntry({ matchID, opponentName, opponentRank }: OngoingMatchProps) {
 
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
@@ -19,10 +19,10 @@ export function OngoingMatchEntry({ matchNumber, opponentName, opponentEmail }: 
     return (
         <TouchableOpacity>
             <View style={styles.matchWrapper}>
-                <Text style={[styles.opponentName, { flex: 1 }]}>
+                <Text style={[styles.opponentName, { flex: 1, color: 'black' }]}>
                     Opponent:
                 </Text>
-                <Text style={[styles.opponentName, { fontFamily: 'SpaceGrotesk-Bold' }]}>{opponentName} (1) </Text>
+                <Text style={[styles.opponentName, { fontFamily: 'SpaceGrotesk-Bold' }]}>{opponentName} ({opponentRank}) </Text>
             </View>
         </TouchableOpacity>
     )

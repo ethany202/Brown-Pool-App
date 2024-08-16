@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -8,15 +8,30 @@ import { type ComponentProps } from 'react';
 interface MatchRequestParams {
     matchID: string,
     opponentName: string,
-    opponentRank: string
+    opponentRank: string,
+    declineChallengeCallback: Function
 }
 
-export function MatchRequest({ matchID, opponentName, opponentRank }: MatchRequestParams) {
+export function MatchRequest({ matchID, opponentName, opponentRank, declineChallengeCallback }: MatchRequestParams) {
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
         "SpaceGrotesk-SemiBold": require("../../assets/fonts/SpaceGrotesk-SemiBold.ttf"),
         "SpaceGrotesk-Bold": require("../../assets/fonts/SpaceGrotesk-Bold.ttf")
     });
+
+    const createConfirmAlert = () => {
+        Alert.alert('Decline Challenge', 'Are you sure you want to decline this challenge?', [
+            {
+                text: 'No',
+                onPress: () => console.log("NO decline challenge"),
+                style: 'cancel'
+            },
+            {
+                text: 'Yes',
+                onPress: () => declineChallengeCallback(matchID),
+            }
+        ])
+    }
 
     return (
         <View style={styles.matchWrapper}>
@@ -29,7 +44,7 @@ export function MatchRequest({ matchID, opponentName, opponentRank }: MatchReque
                 <TouchableOpacity>
                     <MaterialIcons name="check-box" size={25} style={styles.requestButton} color="green" />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={createConfirmAlert}>
                     <MaterialIcons name="do-disturb-on" size={25} style={styles.requestButton} color="red" />
                 </TouchableOpacity>
             </View>

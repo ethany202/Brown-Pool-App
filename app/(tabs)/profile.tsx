@@ -43,7 +43,7 @@ export default function Profile() {
 
     return (
         <View>
-            <Header title={name} />
+            <Header title="Player Stats" />
             <ScrollView
                 style={styles.profileContent}
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center' }}
@@ -55,10 +55,13 @@ export default function Profile() {
                 showsHorizontalScrollIndicator={false}
             >
                 <Text style={styles.profileText}>
-                    Current Rank: <Text style={styles.profileValue}>{profileData.currentRank}</Text>
+                    Player: <Text style={styles.profileValue}>{name}</Text>
                 </Text>
                 <Text style={styles.profileText}>
-                    Total Points: <Text style={styles.profileValue}>{profileData.points}</Text>
+                    Current Rank: <Text style={styles.profileValue}>#{profileData.currentRank}</Text>
+                </Text>
+                <Text style={styles.profileText}>
+                    Total Points: <Text style={styles.profileValue}>{profileData.points} pts</Text>
                 </Text>
                 <Text style={styles.profileText}>
                     Matches Won: <Text style={styles.profileValue}>{profileData.matchesWon}</Text>

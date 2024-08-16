@@ -6,7 +6,7 @@ import { Header } from '@/components/header/Header';
 import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { obtainMatchRequests } from '../api/api';
+import { getAllPlayers, obtainOngoingMatches, obtainMatchRequests, declineChallenge } from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OngoingMatchEntry } from '@/components/ongoing-match-entry/OngoingMatchEntry';
 import { MatchRequest } from '@/components/match-request/MatchRequest';
@@ -22,8 +22,8 @@ export default function Home() {
      * Requests are displayed on HOME page
      */
     const [isInputFocused, setInputFocused] = useState<boolean>(false)
-    const [allPlayers, setAllPlayers] = useState<Array<string>>(['ethan_ye@brown.edu', "ken_kraner@brown.edu", "john_cena@brown.edu", "aslkdjasldkjasldkasjdlkasjdlkasjdljl@brown.edu"])
-    const [filteredPlayers, setFilteredPlayers] = useState<Array<string>>([])
+    const [allPlayers, setAllPlayers] = useState<Array<any>>([])
+    const [filteredPlayers, setFilteredPlayers] = useState<Array<any>>([])
     const [ongoingMatches, setOngoingMatches] = useState<any>({ list: [] })
     const [matchRequests, setMatchRequests] = useState<any>({ list: [] })
     const [matchEntrySections, setMatchEntrySections] = useState<any>([{ title: 'Ongoing Matches', data: [] }, { title: 'Incoming Requests', data: [] }])
@@ -53,6 +53,24 @@ export default function Home() {
         }, 2000);
     }, []);
 
+    const pullAllPlayers = async () => {
+        const playersResult = await getAllPlayers()
+
+        if (playersResult.status === 200) {
+            const playersResultJSON = await playersResult.json()
+            setAllPlayers(playersResultJSON.list)
+        }
+    }
+
+    const getOngoingMatches = async () => {
+        const userID = await AsyncStorage.getItem('user_id') || ''
+        const response = await obtainOngoingMatches(userID)
+
+        if (response.status === 200) {
+            setOngoingMatches(await response.json())
+        }
+    }
+
     const getMatchRequests = async () => {
         const userID = await AsyncStorage.getItem('user_id') || ''
         const response = await obtainMatchRequests(userID)
@@ -62,16 +80,49 @@ export default function Home() {
         }
     }
 
+    const renderMatchEntries = ({ item }: { item: any }) => {
+        if (!item.is_ongoing_match) {
+            return (
+                <MatchRequest
+                    matchID={item.match_id}
+                    opponentName={item.opponent}
+                    opponentRank={item.opponent_rank}
+                    declineChallengeCallback={callDeclineChallenge}
+                />)
+        }
+        else {
+            return (
+                <OngoingMatchEntry
+                    matchID={item.match_id}
+                    opponentName={item.opponent}
+                    opponentRank={item.opponent_rank} />
+            )
+        }
+    };
+
+    const callAcceptChallenge = async (matchID: string) => {
+
+    }
+
+    const callDeclineChallenge = async (matchID: string) => {
+        const declineResponse = await declineChallenge(matchID)
+        if (declineResponse.status === 200) {
+            getMatchRequests()
+        }
+    }
+
     useEffect(() => {
+        pullAllPlayers()
+        getOngoingMatches()
         getMatchRequests()
     }, [])
 
     useEffect(() => {
         const playerRegex = new RegExp(`.*${playerSearch}.*`)
-        var matchingPlayers = new Array<string>()
+        var matchingPlayers = new Array<any>()
 
-        allPlayers.forEach(element => {
-            if (playerRegex.test(element)) {
+        allPlayers.forEach((element: any) => {
+            if (playerRegex.test(element.email)) {
                 matchingPlayers.push(element)
             }
         });
@@ -93,25 +144,6 @@ export default function Home() {
             ])
         }
     }, [ongoingMatches, matchRequests])
-
-    const renderMatchEntries = ({ item, index }: { item: any, index: any }) => {
-        if (!item.is_ongoing_match) {
-            return (
-                <MatchRequest
-                    matchID={item.match_id}
-                    opponentName={item.opponent}
-                    opponentRank={item.opponent_rank}
-                />)
-        }
-        else {
-            return (
-                <OngoingMatchEntry
-                    matchNumber={index + 1}
-                    opponentName={item.player_one_id}
-                    opponentEmail='' />
-            )
-        }
-    };
 
     return (
         <View>
@@ -142,7 +174,7 @@ export default function Home() {
                                 return (
                                     <TouchableOpacity
                                         onPress={() => {
-                                            setPlayerSearch(item)
+                                            setPlayerSearch(item.email)
                                             setInputFocused(false)
                                         }}
                                         style={styles.playerResult}>
@@ -150,7 +182,7 @@ export default function Home() {
                                             style={{
                                                 fontSize: 16
                                             }}
-                                        >{item}</Text>
+                                        >{item.email}</Text>
                                     </TouchableOpacity>
                                 )
                             }}
@@ -201,7 +233,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         flex: 2.5,
         color: 'black',
-        borderRightWidth: 0
+        borderRightWidth: 0,
+        borderColor: '#C00404'
     },
     challengeButton: {
         flex: 1,

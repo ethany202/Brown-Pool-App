@@ -1,5 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
-
 const backendURL = "http://Yanchtop:80"
 
 export async function userLogin(email: string, password: string) {
@@ -12,6 +10,14 @@ export async function userLogin(email: string, password: string) {
         headers: {
             'Content-type': 'application/json; charset=UTF-8'
         }
+    })
+
+    return response
+}
+
+export async function getAllPlayers() {
+    const response = await fetch(`${backendURL}/all-players`, {
+        method: 'GET'
     })
 
     return response
@@ -33,9 +39,6 @@ export async function obtainMatchHistory(userID: string) {
         headers: {
             'Content-type': 'application/json; charset=UTF-8'
         }
-        // headers: {
-        //     'Authorization': `Bearer ${AsyncStorage.getItem('jwtToken')}`
-        // }
     })
 
     return response
@@ -51,9 +54,20 @@ export async function obtainProfileData(email: string, userID: string) {
         headers: {
             'Content-type': 'application/json; charset=UTF-8'
         }
-        // headers: {
-        //     'Authorization': `Bearer ${AsyncStorage.getItem('jwtToken')}`
-        // }
+    })
+
+    return response
+}
+
+export async function obtainOngoingMatches(userID: string) {
+    const response = await fetch(`${backendURL}/ongoing-matches`, {
+        method: 'POST',
+        body: JSON.stringify({
+            userID: userID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
     })
 
     return response
@@ -64,6 +78,20 @@ export async function obtainMatchRequests(userID: string) {
         method: 'POST',
         body: JSON.stringify({
             userID: userID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+    })
+
+    return response
+}
+
+export async function declineChallenge(matchID: string) {
+    const response = await fetch(`${backendURL}/decline-challenge`, {
+        method: 'POST',
+        body: JSON.stringify({
+            matchID: matchID
         }),
         headers: {
             'Content-type': 'application/json; charset=UTF-8'
