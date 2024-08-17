@@ -130,15 +130,14 @@ export async function acceptChallenge(matchID: string) {
     return response
 }
 
-export async function sendMatchResult(matchID: string, winnerID: string, userID: string, userRank: string, opponentRank: string) {
+export async function sendMatchResult(matchID: string, winnerID: string, userID: string, opponentID: string) {
     const response = await fetch(`${backendURL}/send-match-result`, {
         method: 'POST',
         body: JSON.stringify({
             matchID: matchID,
             winnerID: winnerID,
             userID: userID,
-            userRank: userRank,
-            opponentRank: opponentRank
+            opponentID: opponentID
         }),
         headers: {
             'Content-type': 'application/json; charset=UTF-8'

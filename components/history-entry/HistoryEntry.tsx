@@ -24,13 +24,11 @@ export function HistoryEntry({ matchData, style }: HistoryEntryProps) {
 
     // Important Values: Date, 
     const viewMatchData = async () => {
-        const currentID = await AsyncStorage.getItem('user_id')
-        if (matchData.winner_id === currentID) {
-            //setOpponentRank(matchData.player_two_rank)
+        const currentID = await AsyncStorage.getItem('user_id') || '0'
+        if (Number(matchData.winner_id) === Number(currentID)) {
             setMatchResult('W')
         }
         else {
-            //setOpponentRank(matchData.player_one_rank)
             setMatchResult('L')
         }
 

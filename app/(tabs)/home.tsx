@@ -83,6 +83,7 @@ export default function Home() {
 
         if (challengeResponse.status === 200) {
             createChallengeSentAlert()
+            setPlayerSearch('')
         }
     }
 
@@ -108,6 +109,7 @@ export default function Home() {
         if (!item.is_ongoing_match) {
             return (
                 <MatchRequest
+                    inMatch={ongoingMatches.list.length > 0}
                     matchID={item.match_id}
                     opponentName={item.opponent}
                     opponentRank={item.opponent_rank}
@@ -122,32 +124,18 @@ export default function Home() {
                     opponentID={item.opponent_id}
                     opponentName={item.opponent}
                     opponentRank={item.opponent_rank}
-                    recordMatchWinCallback={recordMatchWin}
-                    recordMatchLossCallback={recordMatchLoss} />
+                    recordMatchResultCallback={recordMatchResult} />
             )
         }
     };
 
-    const recordMatchWin = async (matchID: string, opponentRank: string) => {
-        const userID = await AsyncStorage.getItem('user_id') || '0'
-        const rankNumber = await AsyncStorage.getItem('rank_number') || '0'
-        const response = await sendMatchResult(matchID, userID, userID, rankNumber, opponentRank)
 
+    const recordMatchResult = async (matchID: string, winnerID: string, userID: string, opponentID: string) => {
+        const response = await sendMatchResult(matchID, winnerID, userID, opponentID)
         if (response.status === 200) {
             getOngoingMatches()
         }
     }
-
-    const recordMatchLoss = async (matchID: string, opponentID: string, opponentRank: string) => {
-        const userID = await AsyncStorage.getItem('user_id') || '0'
-        const rankNumber = await AsyncStorage.getItem('rank_number') || '0'
-        const response = await sendMatchResult(matchID, opponentID, userID, rankNumber, opponentRank)
-
-        if (response.status === 200) {
-            getOngoingMatches()
-        }
-    }
-
 
     const callAcceptChallenge = async (matchID: string) => {
         const acceptResponse = await acceptChallenge(matchID)

@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import { MaterialIcons } from '@expo/vector-icons';
 
 interface MatchRequestParams {
+    inMatch: boolean,
     matchID: string,
     opponentName: string,
     opponentRank: string,
@@ -11,7 +12,7 @@ interface MatchRequestParams {
     declineChallengeCallback: Function
 }
 
-export function MatchRequest({ matchID, opponentName, opponentRank, acceptChallengeCallback, declineChallengeCallback }: MatchRequestParams) {
+export function MatchRequest({ inMatch, matchID, opponentName, opponentRank, acceptChallengeCallback, declineChallengeCallback }: MatchRequestParams) {
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
         "SpaceGrotesk-SemiBold": require("../../assets/fonts/SpaceGrotesk-SemiBold.ttf"),
@@ -40,9 +41,11 @@ export function MatchRequest({ matchID, opponentName, opponentRank, acceptChalle
                 }}>{opponentName} ({opponentRank})</Text>
             </Text>
             <View style={styles.requestButtons}>
-                <TouchableOpacity onPress={() => acceptChallengeCallback(matchID)}>
-                    <MaterialIcons name="check-box" size={25} style={styles.requestButton} color="green" />
-                </TouchableOpacity>
+                {inMatch
+                    ? <MaterialIcons name="check-box" size={25} style={styles.requestButton} color="grey" />
+                    : <TouchableOpacity onPress={() => acceptChallengeCallback(matchID)}>
+                        <MaterialIcons name="check-box" size={25} style={styles.requestButton} color="green" />
+                    </TouchableOpacity>}
                 <TouchableOpacity onPress={createConfirmAlert}>
                     <MaterialIcons name="do-disturb-on" size={25} style={styles.requestButton} color="red" />
                 </TouchableOpacity>

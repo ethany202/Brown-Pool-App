@@ -9,11 +9,10 @@ interface OngoingMatchProps {
     opponentName: string,
     opponentID: string,
     opponentRank: string,
-    recordMatchWinCallback: Function,
-    recordMatchLossCallback: Function
+    recordMatchResultCallback: Function
 }
 
-export function OngoingMatchEntry({ matchID, opponentID, opponentName, opponentRank, recordMatchWinCallback, recordMatchLossCallback }: OngoingMatchProps) {
+export function OngoingMatchEntry({ matchID, opponentID, opponentName, opponentRank, recordMatchResultCallback }: OngoingMatchProps) {
 
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
@@ -26,11 +25,17 @@ export function OngoingMatchEntry({ matchID, opponentID, opponentName, opponentR
         Alert.alert('Record Match', 'Select the winner of the match.', [
             {
                 text: 'Me',
-                onPress: () => recordMatchWinCallback(matchID, opponentRank)
+                onPress: async () => {
+                    const userID = await AsyncStorage.getItem("user_id")
+                    recordMatchResultCallback(matchID, userID, userID, opponentID)
+                }
             },
             {
                 text: `${opponentName} (${opponentRank})`,
-                onPress: () => recordMatchLossCallback(matchID, opponentID, opponentRank)
+                onPress: async () => {
+                    const userID = await AsyncStorage.getItem("user_id")
+                    recordMatchResultCallback(matchID, opponentID, userID, opponentID)
+                }
             },
             {
                 text: 'Cancel',

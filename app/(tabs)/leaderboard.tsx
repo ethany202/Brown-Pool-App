@@ -69,9 +69,10 @@ export default function Leaderboard() {
                 data={leaderboardInfo.list}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => {
-                    if (item.rank_number % 2 == 1) {
+                    if (item.rank_number % 2 === 1) {
                         return (
                             <PlayerEntry
+                                userID={item.user_id}
                                 rank={item.rank_number}
                                 name={item.name}
                                 points={item.points}
@@ -83,6 +84,7 @@ export default function Leaderboard() {
                     else {
                         return (
                             <PlayerEntry
+                                userID={item.user_id}
                                 rank={item.rank_number}
                                 name={item.name}
                                 points={item.points}
