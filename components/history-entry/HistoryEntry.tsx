@@ -12,6 +12,7 @@ export function HistoryEntry({ matchData, style }: HistoryEntryProps) {
 
     const [matchResult, setMatchResult] = useState<string>('L')
     const [wonMatch, setWonMatch] = useState<boolean>(false)
+    const [opponentName, setOpponentName] = useState<string>('John Doe')
     const [opponentRank, setOpponentRank] = useState<string>('50')
     const [matchDate, setMatchDate] = useState<string>('2000-01-01')
 
@@ -24,31 +25,23 @@ export function HistoryEntry({ matchData, style }: HistoryEntryProps) {
     // Important Values: Date, 
     const viewMatchData = async () => {
         const currentID = await AsyncStorage.getItem('user_id')
-        if (matchData.player_one_id == currentID) {
-            setOpponentRank(matchData.player_two_rank)
-        }
-        else {
-            setOpponentRank(matchData.player_one_rank)
-        }
-
-        setMatchDate(matchData.match_date.substring(0, 10))
-    }
-
-    const matchWon = async () => {
-        const currentID = await AsyncStorage.getItem('user_id')
-        setWonMatch(matchData.winner_id == currentID)
-
-        if (matchData.winner_id == currentID) {
+        if (matchData.winner_id === currentID) {
+            //setOpponentRank(matchData.player_two_rank)
             setMatchResult('W')
         }
         else {
+            //setOpponentRank(matchData.player_one_rank)
             setMatchResult('L')
         }
+
+        setWonMatch(matchData.winner_id == currentID)
+        setOpponentName(matchData.opponent_name)
+        setOpponentRank(matchData.opponent_rank)
+        setMatchDate(matchData.match_date.substring(0, 10))
     }
 
     useEffect(() => {
         viewMatchData()
-        matchWon()
     }, [])
 
     return (
@@ -65,7 +58,7 @@ export function HistoryEntry({ matchData, style }: HistoryEntryProps) {
             <Text style={[styles.entryStyle, {
                 flex: 2
             }]}>
-                Ben Woods ({opponentRank})
+                {opponentName} ({opponentRank})
             </Text>
             <Text style={[styles.entryStyle, {
                 flex: 0

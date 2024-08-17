@@ -67,6 +67,7 @@ export default function Leaderboard() {
             <FlatList
                 style={styles.leaderboardSection}
                 data={leaderboardInfo.list}
+                showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => {
                     if (item.rank_number % 2 == 1) {
                         return (
@@ -105,7 +106,7 @@ export default function Leaderboard() {
 const styles = StyleSheet.create({
     leaderboardSection: {
         // flex: 1
-        height: 400
+        flexGrow: 1
     },
     entryStyle: {
         display: 'flex',

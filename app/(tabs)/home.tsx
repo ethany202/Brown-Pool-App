@@ -1,12 +1,15 @@
 import {
     Text, View, TextInput, TouchableOpacity, FlatList,
-    SectionList, RefreshControl
+    SectionList, RefreshControl, Alert
 } from 'react-native';
 import { Header } from '@/components/header/Header';
 import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { getAllPlayers, obtainOngoingMatches, obtainMatchRequests, declineChallenge } from '../api/api';
+import {
+    getAllPlayers, sendChallenge, obtainOngoingMatches, obtainMatchRequests,
+    declineChallenge, acceptChallenge, sendMatchResult
+} from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OngoingMatchEntry } from '@/components/ongoing-match-entry/OngoingMatchEntry';
 import { MatchRequest } from '@/components/match-request/MatchRequest';
@@ -24,10 +27,12 @@ export default function Home() {
     const [isInputFocused, setInputFocused] = useState<boolean>(false)
     const [allPlayers, setAllPlayers] = useState<Array<any>>([])
     const [filteredPlayers, setFilteredPlayers] = useState<Array<any>>([])
+    const [playerSearch, setPlayerSearch] = useState<string>('')
+    const [selectedPlayerID, setSelectedPlayerID] = useState<string>('')
+
     const [ongoingMatches, setOngoingMatches] = useState<any>({ list: [] })
     const [matchRequests, setMatchRequests] = useState<any>({ list: [] })
     const [matchEntrySections, setMatchEntrySections] = useState<any>([{ title: 'Ongoing Matches', data: [] }, { title: 'Incoming Requests', data: [] }])
-    const [playerSearch, setPlayerSearch] = useState<string>('')
 
     /**
      * Style-based elements
@@ -42,16 +47,26 @@ export default function Home() {
     /**
      * Refresh elements
      */
-
     const [refreshing, setRefreshing] = useState(false);
-
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {
-            getMatchRequests()
+            refreshMatchData()
             setRefreshing(false);
         }, 2000);
     }, []);
+
+    /**
+     * Alert do show that challenge has been sent
+     */
+    const createChallengeSentAlert = () => {
+        Alert.alert('Challenge sent', 'Your challenge has been sent.', [
+            {
+                text: 'OK',
+                onPress: () => console.log("Challenge sent"),
+            }
+        ])
+    }
 
     const pullAllPlayers = async () => {
         const playersResult = await getAllPlayers()
@@ -59,6 +74,15 @@ export default function Home() {
         if (playersResult.status === 200) {
             const playersResultJSON = await playersResult.json()
             setAllPlayers(playersResultJSON.list)
+        }
+    }
+
+    const executeSendChallenge = async () => {
+        const userID = await AsyncStorage.getItem('user_id') || ''
+        const challengeResponse = await sendChallenge(userID, selectedPlayerID)
+
+        if (challengeResponse.status === 200) {
+            createChallengeSentAlert()
         }
     }
 
@@ -87,21 +111,50 @@ export default function Home() {
                     matchID={item.match_id}
                     opponentName={item.opponent}
                     opponentRank={item.opponent_rank}
-                    declineChallengeCallback={callDeclineChallenge}
-                />)
+                    acceptChallengeCallback={callAcceptChallenge}
+                    declineChallengeCallback={callDeclineChallenge} />
+            )
         }
         else {
             return (
                 <OngoingMatchEntry
                     matchID={item.match_id}
+                    opponentID={item.opponent_id}
                     opponentName={item.opponent}
-                    opponentRank={item.opponent_rank} />
+                    opponentRank={item.opponent_rank}
+                    recordMatchWinCallback={recordMatchWin}
+                    recordMatchLossCallback={recordMatchLoss} />
             )
         }
     };
 
-    const callAcceptChallenge = async (matchID: string) => {
+    const recordMatchWin = async (matchID: string, opponentRank: string) => {
+        const userID = await AsyncStorage.getItem('user_id') || '0'
+        const rankNumber = await AsyncStorage.getItem('rank_number') || '0'
+        const response = await sendMatchResult(matchID, userID, userID, rankNumber, opponentRank)
 
+        if (response.status === 200) {
+            getOngoingMatches()
+        }
+    }
+
+    const recordMatchLoss = async (matchID: string, opponentID: string, opponentRank: string) => {
+        const userID = await AsyncStorage.getItem('user_id') || '0'
+        const rankNumber = await AsyncStorage.getItem('rank_number') || '0'
+        const response = await sendMatchResult(matchID, opponentID, userID, rankNumber, opponentRank)
+
+        if (response.status === 200) {
+            getOngoingMatches()
+        }
+    }
+
+
+    const callAcceptChallenge = async (matchID: string) => {
+        const acceptResponse = await acceptChallenge(matchID)
+        if (acceptResponse.status === 200) {
+            getOngoingMatches()
+            getMatchRequests()
+        }
     }
 
     const callDeclineChallenge = async (matchID: string) => {
@@ -111,10 +164,14 @@ export default function Home() {
         }
     }
 
-    useEffect(() => {
+    const refreshMatchData = () => {
         pullAllPlayers()
         getOngoingMatches()
         getMatchRequests()
+    }
+
+    useEffect(() => {
+        refreshMatchData()
     }, [])
 
     useEffect(() => {
@@ -162,7 +219,8 @@ export default function Home() {
                             }}
                         />
                         <TouchableOpacity
-                            style={styles.challengeButton}>
+                            style={styles.challengeButton}
+                            onPress={executeSendChallenge}>
                             <Text style={styles.buttonText}>Send</Text>
                         </TouchableOpacity>
                     </View>
@@ -174,6 +232,7 @@ export default function Home() {
                                 return (
                                     <TouchableOpacity
                                         onPress={() => {
+                                            setSelectedPlayerID("" + item.user_id)
                                             setPlayerSearch(item.email)
                                             setInputFocused(false)
                                         }}
@@ -197,6 +256,7 @@ export default function Home() {
                         sections={matchEntrySections}
                         style={styles.matchesListComponent}
                         renderItem={renderMatchEntries}
+                        showsHorizontalScrollIndicator={false}
                         renderSectionHeader={({ section: { title } }) => (
                             <View style={styles.listHeaderView}>
                                 <Text style={styles.listHeaderStyle}>{title}</Text>
@@ -287,15 +347,12 @@ const styles = StyleSheet.create({
         zIndex: -1,
         marginVertical: 30,
         paddingBottom: 50,
-        marginHorizontal: 20,
-        // borderTopWidth: 2,
-        // borderColor: '#FFC72C',
+        marginHorizontal: matchEntriesHorizontalMargin,
         width: screenWidth - (2 * matchEntriesHorizontalMargin),
     },
     matchesListComponent: {
-        // borderWidth: 2.5,
         borderRadius: 6,
         alignSelf: 'stretch',
-        height: 350
+        flexGrow: 1
     }
 })

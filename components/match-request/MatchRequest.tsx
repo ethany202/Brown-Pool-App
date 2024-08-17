@@ -2,17 +2,16 @@ import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import { MaterialIcons } from '@expo/vector-icons';
-import { type IconProps } from '@expo/vector-icons/build/createIconSet';
-import { type ComponentProps } from 'react';
 
 interface MatchRequestParams {
     matchID: string,
     opponentName: string,
     opponentRank: string,
+    acceptChallengeCallback: Function,
     declineChallengeCallback: Function
 }
 
-export function MatchRequest({ matchID, opponentName, opponentRank, declineChallengeCallback }: MatchRequestParams) {
+export function MatchRequest({ matchID, opponentName, opponentRank, acceptChallengeCallback, declineChallengeCallback }: MatchRequestParams) {
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
         "SpaceGrotesk-SemiBold": require("../../assets/fonts/SpaceGrotesk-SemiBold.ttf"),
@@ -41,7 +40,7 @@ export function MatchRequest({ matchID, opponentName, opponentRank, declineChall
                 }}>{opponentName} ({opponentRank})</Text>
             </Text>
             <View style={styles.requestButtons}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => acceptChallengeCallback(matchID)}>
                     <MaterialIcons name="check-box" size={25} style={styles.requestButton} color="green" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={createConfirmAlert}>

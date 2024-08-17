@@ -24,16 +24,14 @@ export default function MatchHistory() {
             const currentID = await AsyncStorage.getItem('user_id') || ''
             const response = await obtainMatchHistory(currentID)
 
-            if (response.status == 200) {
+            if (response.status === 200) {
                 const jsonData = await response.json()
                 setMatchHistory(jsonData)
-                // Set Match History data
             }
         }
         catch (err) {
             console.log(err)
         }
-
     }
 
     useEffect(() => {
@@ -46,6 +44,7 @@ export default function MatchHistory() {
             <FlatList
                 style={styles.historySection}
                 data={matchHistory.list}
+                showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => {
                     return (
                         <HistoryEntry
@@ -66,7 +65,7 @@ export default function MatchHistory() {
 
 const styles = StyleSheet.create({
     historySection: {
-        height: 500
+        flexGrow: 1
     },
     historyEntry: {
         display: 'flex',

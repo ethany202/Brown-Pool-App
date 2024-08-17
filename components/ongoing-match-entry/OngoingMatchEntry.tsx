@@ -1,14 +1,19 @@
-import { View, Pressable, TouchableOpacity, Text } from 'react-native';
+import { View, Pressable, TouchableOpacity, Text, Alert } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sendMatchResult } from '@/app/api/api';
 
 interface OngoingMatchProps {
-    matchID: number,
+    matchID: string,
     opponentName: string,
-    opponentRank: string
+    opponentID: string,
+    opponentRank: string,
+    recordMatchWinCallback: Function,
+    recordMatchLossCallback: Function
 }
 
-export function OngoingMatchEntry({ matchID, opponentName, opponentRank }: OngoingMatchProps) {
+export function OngoingMatchEntry({ matchID, opponentID, opponentName, opponentRank, recordMatchWinCallback, recordMatchLossCallback }: OngoingMatchProps) {
 
     const [fontsLoaded, fontError] = useFonts({
         "SpaceGrotesk-Regular": require("../../assets/fonts/SpaceGrotesk-Regular.ttf"),
@@ -16,8 +21,27 @@ export function OngoingMatchEntry({ matchID, opponentName, opponentRank }: Ongoi
         "SpaceGrotesk-Bold": require("../../assets/fonts/SpaceGrotesk-Bold.ttf")
     });
 
+
+    const recordResultAlert = () => {
+        Alert.alert('Record Match', 'Select the winner of the match.', [
+            {
+                text: 'Me',
+                onPress: () => recordMatchWinCallback(matchID, opponentRank)
+            },
+            {
+                text: `${opponentName} (${opponentRank})`,
+                onPress: () => recordMatchLossCallback(matchID, opponentID, opponentRank)
+            },
+            {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => console.log("Cancel pressed")
+            }
+        ])
+    }
+
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={recordResultAlert}>
             <View style={styles.matchWrapper}>
                 <Text style={[styles.opponentName, { flex: 1, color: 'black' }]}>
                     Opponent:

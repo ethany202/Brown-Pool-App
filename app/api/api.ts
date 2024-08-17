@@ -59,6 +59,21 @@ export async function obtainProfileData(email: string, userID: string) {
     return response
 }
 
+export async function sendChallenge(userID: string, opponentID: string) {
+    const response = await fetch(`${backendURL}/send-challenge`, {
+        method: 'POST',
+        body: JSON.stringify({
+            userID: userID,
+            opponentID: opponentID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+    })
+
+    return response
+}
+
 export async function obtainOngoingMatches(userID: string) {
     const response = await fetch(`${backendURL}/ongoing-matches`, {
         method: 'POST',
@@ -92,6 +107,38 @@ export async function declineChallenge(matchID: string) {
         method: 'POST',
         body: JSON.stringify({
             matchID: matchID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+    })
+
+    return response
+}
+
+export async function acceptChallenge(matchID: string) {
+    const response = await fetch(`${backendURL}/accept-challenge`, {
+        method: 'POST',
+        body: JSON.stringify({
+            matchID: matchID
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8'
+        }
+    })
+
+    return response
+}
+
+export async function sendMatchResult(matchID: string, winnerID: string, userID: string, userRank: string, opponentRank: string) {
+    const response = await fetch(`${backendURL}/send-match-result`, {
+        method: 'POST',
+        body: JSON.stringify({
+            matchID: matchID,
+            winnerID: winnerID,
+            userID: userID,
+            userRank: userRank,
+            opponentRank: opponentRank
         }),
         headers: {
             'Content-type': 'application/json; charset=UTF-8'
